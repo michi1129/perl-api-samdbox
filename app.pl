@@ -1,23 +1,18 @@
-use strict;
-use warnings;
-use feature qw/say/;
-use Data::Dumper;
-
 use Mojolicious::Lite;
-use JSON qw/encode_json decode_json/;
 
-get '/' => {text => "I am mojolicious!"};
+get '/' => {text=>"hello mattermost"};
 
-get '/other' => {text => 'Other response.'};
-
-get '/main' => sub {
+post '/slash' => sub {
   my $self = shift;
-  my $obj = {
-    response_type => "in_channel",
-    body => "VALUES",
-  };
-
-  $self->render(json => encode_json($obj));
+  my $text = $self->param('text');
+  $self->render(text=>"your word: $text");
 };
 
-app->start
+post '/outgoing' => sub {
+  my $self = shift;
+  my $text = $self->param('text');
+  my $user_name = $self->param('user_name');
+  $self->render(json=>{text=>"\@$user_name\n> $text"});
+};
+
+app->start;
